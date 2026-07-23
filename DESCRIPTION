@@ -1,0 +1,36 @@
+Package: ECLIPSE
+Title: ECLIPSE: Enhanced CLonotypic Inference via Prediction of Single-cell Expression
+Version: 0.99.0
+Authors@R: c(
+    person("Ethan", "Burns", comment = c(ORCID = "0009-0009-8061-3686"), email = "ethan.burns@yale.edu", role = c("aut", "cre")),
+    person("Zhaochen", "Ye", comment = c(ORCID = "0009-0000-4422-3861"), email = "zhaochen.ye@yale.edu", role = "ctb"),
+    person("Kelly", "Street", comment = c(ORCID = "0000-0001-6379-5013"), email = "kelly.street@gmail.com", role = "ctb"),
+    person("David", "Braun", comment = c(ORCID = "0000-0003-4543-5553"), email = "david.braun@yale.edu", role = c("aut", "fnd")))
+Description: This package primary analyzes single-cell T cell receptor sequencing data (scTCR-seq) produced from the CellRanger V(D)J pipeline. Specifically, it handles ambiguous clonotypes from T cells that have <2 or >2 TCR chains. The implementation of the E-M algorithm from VDJdive is used and combined with the discrimination of clonotypes with extra TCR chains from biological expression vs. technical artifacts. The package uses and returns a Seurat object, which then is able to be filtered based on TCR chain count using a second function.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports: 
+    dplyr,
+    ggplot2,
+    scRepertoire,
+    stringr,
+    tidyr,
+    VDJdive,
+    methods,
+    rlang,
+    testthat,
+    BiocStyle,
+    tidyselect,
+    magrittr
+URL: https://github.com/eburns10/ECLIPSE
+biocViews: Software, GeneExpression, BiomedicalInformatics, ImmunoOncology, Transcriptomics, Classification, SingleCell, Annotation, Sequencing
+BugReports: https://github.com/eburns10/ECLIPSE/issues
+Depends: 
+    R (>= 4.4.0)
+Config/roxygen2/version: 8.0.0
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
