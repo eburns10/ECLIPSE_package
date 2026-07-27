@@ -26,7 +26,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r knitr, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
@@ -58,18 +58,18 @@ Please refer to our
 for more details about this method.
 
 # Installation and loading
-```{r, echo = FALSE, results = "hide", message = FALSE, warning = FALSE}
+```{r installation, echo = FALSE, results = "hide", message = FALSE, warning = FALSE}
 require(stringr)
 require(dplyr)
 require(scRepertoire)
 ```
 
 Please use the following code to download `ECLIPSE` from GitHub and load it:
-```{r, eval = FALSE}
-remotes::install_github("eburns10/ECLIPSE/")
+```{r githubInstall, eval = FALSE}
+remotes::install_github("eburns10/ECLIPSE")
 ```
 
-```{r}
+```{r loadECLIPSE}
 library(ECLIPSE)
 ```
 
@@ -79,7 +79,7 @@ S15) with clear cell renal cell carcinoma (derived from [Braun et al., 2021](
 https://doi.org/10.1016/j.ccell.2021.02.013)). Each patient has two samples: 
 one from tumor tissue and one from matched adjacent normal tissue. To load the
 dataset in, we can use the following code:
-```{r}
+```{r loadSeuratObject}
 data("vignette_object")
 ```
 
@@ -110,7 +110,7 @@ files (i.e. you cannot put the contig files from each sample into 1 folder).
 In order to create a vector of folder paths, we can use the `list.dirs()`
 function:
 
-```{r}
+```{r getFolderPath}
 # Finding where the vignette data for ECLIPSE is stored
 vignette_dir <- system.file("extdata/vignette", package = "ECLIPSE")
 
@@ -126,7 +126,7 @@ the full path to the contig file. This option would be better if you have many
 contig files from different samples in one folder. 
 To make the vector, here we can use `list.files()`:
 
-```{r}
+```{r getFilePath}
 # Generates the vector of file paths
 contig_paths <- list.files(path = vignette_dir,
                            pattern = "all_contig", 
@@ -152,7 +152,7 @@ files to be sure!
 
 For our dataset, the raw contig files have cell barcode suffixes of -1, so 
 let's look at the barcodes in our Seurat object to see if they will match:
-```{r}
+```{r checkBarcodes}
 # Existing cell barcodes. They aren't the original!
 head(rownames(vignette_object[[]]))
 ```
@@ -160,7 +160,7 @@ head(rownames(vignette_object[[]]))
 As you can see, they do not match. Let's change the suffixes to -1 and make a 
 new column called `cell_barcode` that we can pass to the `original_barcode` 
 argument of ECLIPSE:
-```{r}
+```{r makeBarcodeColumn}
 # Making a column with these barcodes where the suffix is -1
 vignette_object$cell_barcode <- str_replace(rownames(vignette_object[[]]),
                                             pattern = "-.*$", 
@@ -172,7 +172,7 @@ head(vignette_object$cell_barcode) %>% as.vector()
 This column tells `ECLIPSE` which contig file holds the TCR information for
 each cell in the Seurat object. The position of the contig file in the vector
 must be provided here (ex. 2, but not "2").
-```{r}
+```{r checkContigPaths}
 # Looking at the vector of file_paths
 contig_paths
 ```
@@ -180,7 +180,7 @@ contig_paths
 For example, `contig_paths[1]` holds a path for the TCR contigs for a cells
 from the normal tissue of S15, so any cell from that sample must have 1 in 
 this new column. We can make this column, here called `index`, as such:
-```{r}
+```{r makeBatchColumn}
 # Since normal tissue from sample 15 is first (S15N), it is 1.
 # Tumor tissue from 15 is next (S15T), so it is 2, etc...
 vignette_object[[]] <- vignette_object[[]] %>% 
@@ -203,7 +203,7 @@ required to provide the donor/mouse. Even if we want to compare S3 tumor vs.
 normal and S15 tumor vs. normal downstream, here we must provide S3 and S15. 
 Fortunately, this column is already created for us, and it should be already 
 present in most real-world uses. Let's look at this column, called `donor`:
-```{r}
+```{r checkDonorColumn}
 # Show donor column
 table(vignette_object$donor)
 ```
@@ -218,7 +218,7 @@ frequency will be 1/500 vs. if we provide the sample, then it will be
 **column passed to donor**. Let's choose by sample here, which again is 
 already created for us through the column `Sample` (and typically will be 
 created in most real cases):
-```{r}
+```{r checkSampleColumn}
 # Show Sample column
 table(vignette_object$Sample)
 ```
@@ -251,7 +251,7 @@ performed, and the final clonotype is instead determined by
 To run `ECLIPSE`, there are two options, depending on whether we generated a 
 vector of folders containing contigs or contig file paths. If we want to use
 a vector of folder paths, we can use the following code:
-```{r}
+```{r runEclipseFolder}
 # Option 1: Running with paths of folders containing contigs
 object_after_ECLIPSE <- ECLIPSE(contig_type = "all",
                                 contig_folder_paths = tcr_folder_paths,
@@ -271,7 +271,7 @@ we provide.
 If we want to provide TCR contig file paths, we can use the 
 `contig_file_paths` argument, omit the `contig_folder_paths` argument, and 
 `contig_type = "manual"`:
-```{r}
+```{r runEclipseFile}
 # Option 2: Running with contig paths
 object_after_ECLIPSE <- ECLIPSE(contig_type = "manual",
                                 contig_file_paths = contig_paths,
@@ -291,14 +291,14 @@ analysis went quite well.
 
 Let's take a look at the final clonotypes that `ECLIPSE` decided on, now 
 stored in the `CTaa` column of the Seurat meta.data:
-```{r}
+```{r checkClonotypes}
 # Final ECLIPSE clonotype
 head(object_after_ECLIPSE$CTaa) %>% as.vector()
 ```
 
 We can also compare these final clonotypes to what traditional analysis 
 would have determined: 
-```{r}
+```{r checkTraditionalClonotypes}
 # Clonotype from traditional analysis
 head(object_after_ECLIPSE$scR_CTaa) %>% as.vector()
 ```
@@ -314,7 +314,7 @@ ECLIPSE function, `tcrDoubletDetect`, to filter out cells with excessive TCR
 chains (these cells are likely a mix of doublets and cells with TCR 
 contamination). Here we remove any cells with >2 TCR$\alpha$ chains, >2 
 TCR$\beta$ chains, or >4 total ($\alpha$ + $\beta$) chains:
-```{r}
+```{r runDoubletDetect}
 object_after_ECLIPSE <- tcrDoubletDetect(object_after_ECLIPSE,
                                          singleChainLimit = 2,
                                          totalChainLimit = 4)
@@ -335,7 +335,7 @@ on CDR3 amino acid sequences, we must always use the argument
 Shown below are a couple potential types of downstream analysis made possible
 with `r Biocpkg("scRepertoire")`. For example, we can look at clonal sharing 
 across samples:
-```{r}
+```{r runCompareClonotypes}
 clonalCompare(object_after_ECLIPSE,
               top.clones = 10,
               graph = "alluvial",
@@ -347,14 +347,14 @@ clonalCompare(object_after_ECLIPSE,
 
 We can also visualize which samples have a larger fraction of expanded 
 clonotypes:
-```{r}
+```{r runClonalHomeostasis}
 clonalHomeostasis(object_after_ECLIPSE,
                   cloneCall = "aa",
                   group.by = "Sample")
 ```
 
 Or we can look at repertoire diversity across samples:
-```{r}
+```{r runClonalDiversity}
 clonalDiversity(object_after_ECLIPSE,
                 metric = "shannon",
                 cloneCall = "aa",
@@ -378,7 +378,7 @@ find clones with biological expression of 3 TCR chains, but can be also
 used to see which clones were called with 3 TCR chains and how that occurred.
 To see these clones we can use the code below. First, we generate QC filtered
 contigs using the `returnFilteredContigs` argument of `ECLIPSE`:
-```{r}
+```{r makeContigs}
 postqc_contigs <- ECLIPSE(contig_type = "all",
                           contig_folder_paths = tcr_folder_paths,
                           seurat_object = vignette_object,
@@ -393,7 +393,7 @@ postqc_contigs <- ECLIPSE(contig_type = "all",
 Next, we filter on a sample we are interested in, and pass the contigs onto
 `findThreeChainClones` using ` mode = "show"` and `chain = "a"`
 to show clones with 2 TCR$\alpha$ chains:
-```{r}
+```{r runFindThreeChainClones}
 s15_contigs <- postqc_contigs %>% filter(donor == "S15")
 
 three_chain_clones <- findThreeChainClones(s15_contigs,
@@ -406,12 +406,12 @@ three_chain_clones <- findThreeChainClones(s15_contigs,
 This provides a list containing:
 
 1. A table of all clones with 2 TCR$\alpha$ chains after filtering
-```{r}
+```{r getOutput1}
 three_chain_clones[[1]]
 ```
 
 2. Pre-filtering table that shows how some of these clones were called
-```{r}
+```{r getOutput2}
 three_chain_clones[[2]]
 ```
 
@@ -481,6 +481,6 @@ that are not searched for by ECLIPSE.
 
 
 # Session Info
-```{r}
+```{r checkSessionInfo}
 sessionInfo()
 ```
