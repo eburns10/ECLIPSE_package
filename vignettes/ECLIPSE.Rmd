@@ -356,7 +356,7 @@ clonalHomeostasis(object_after_ECLIPSE,
 Or we can look at repertoire diversity across samples:
 ```{r}
 clonalDiversity(object_after_ECLIPSE,
-                metric = c("shannon", "norm.entropy"),
+                metric = "shannon",
                 cloneCall = "aa",
                 group.by = "Sample")
 ```

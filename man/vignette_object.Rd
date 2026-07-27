@@ -11,7 +11,7 @@ A Seurat object.
 Example data
 }
 \usage{
-vignette_object
+data(vignette_object)
 }
 \description{
 Example small Seurat object without TCR information.

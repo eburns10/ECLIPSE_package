@@ -11,7 +11,7 @@ A Seurat object.
 Example data
 }
 \usage{
-test_seurat
+data(test_seurat)
 }
 \description{
 Example minimal Seurat object without TCR information.

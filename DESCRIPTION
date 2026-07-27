@@ -31,6 +31,7 @@ Depends:
 Config/roxygen2/version: 8.0.0
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    ragg
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
+RoxygenNote: 8.0.0

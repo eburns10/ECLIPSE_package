@@ -13,7 +13,7 @@ that is produced by cellranger vdj.
 Example data
 }
 \usage{
-post_qc_contigs
+data(post_qc_contigs)
 }
 \description{
 Example Post-QC TCR contigs that would be generated within ECLIPSE
