@@ -58,7 +58,7 @@ Please refer to our
 for more details about this method.
 
 # Installation and loading
-```{r installation, echo = FALSE, results = "hide", message = FALSE, warning = FALSE}
+```{r reqs, echo = FALSE, results = "hide", message = FALSE, warning = FALSE}
 require(stringr)
 require(dplyr)
 require(scRepertoire)

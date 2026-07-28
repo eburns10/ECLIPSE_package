@@ -1,26 +1,35 @@
-
 # ECLIPSE
+ECLIPSE is a novel method of scTCR-seq analysis that can predict the 
+clonotypes of T cells possessing >2 or only 1 TCR chain. These populations of 
+cells, which can represent >50% of cells in some samples, are not well 
+suited for traditional scTCR-seq analysis. By mapping chain pairings across the 
+sample and using the EM algorithm, ECLIPSE is able to predict chains lost to 
+sequencing dropout and discern between cells that have >2 TCR due to true  
+biology vs. sequencing artifacts. Together this leads to larger clone sizes 
+and less cells without a clonotype assignment, allowing users to make best use 
+of their scTCR-seq data.
 
-<!-- badges: start -->
-<!-- badges: end -->
+### Authors
+Ethan C. Burns, Zhaochen Ye, Kelly Street, and David A. Braun
 
-The goal of ECLIPSE is to ...
-
-## Installation
-
-You can install the development version of ECLIPSE from [GitHub](https://github.com/) with:
-
+### Installation
+To download the development version of ECLIPSE, please run:
 ``` r
-# install.packages("pak")
-pak::pak("eburns10/ECLIPSE_package")
+remotes::install_github("eburns10/ECLIPSE")
 ```
 
-## Example
+### Manuscript
+ECLIPSE is described in detail in our pre-print on 
+bioRxiv: "VDJdive and ECLIPSE enhance single-cell TCR sequencing analysis 
+through the probabilistic resolution of ambiguous clonotypes" available 
+[here](https://doi.org/10.64898/2026.02.18.706444)
 
-This is a basic example which shows you how to solve a common problem:
+### Issues
+Please use our issues 
+[page](https://github.com/eburns10/ECLIPSE_bioconductor_submission/issues) or 
+email ethan.burns [@] yale.edu
 
-``` r
-library(ECLIPSE)
-## basic example code
-```
+### How to use
+Please view the vignette in the vignettes folder
+
 
