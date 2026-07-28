@@ -271,7 +271,7 @@ we provide.
 If we want to provide TCR contig file paths, we can use the 
 `contig_file_paths` argument, omit the `contig_folder_paths` argument, and 
 `contig_type = "manual"`:
-```{r runEclipseFile}
+```{r runEclipseFile, fig.alt = "Plot from ECLIPSE"}
 # Option 2: Running with contig paths
 object_after_ECLIPSE <- ECLIPSE(contig_type = "manual",
                                 contig_file_paths = contig_paths,
@@ -314,7 +314,7 @@ ECLIPSE function, `tcrDoubletDetect`, to filter out cells with excessive TCR
 chains (these cells are likely a mix of doublets and cells with TCR 
 contamination). Here we remove any cells with >2 TCR$\alpha$ chains, >2 
 TCR$\beta$ chains, or >4 total ($\alpha$ + $\beta$) chains:
-```{r runDoubletDetect}
+```{r runDoubletDetect, fig.alt = "Plots from tcrDoubletDetect"}
 object_after_ECLIPSE <- tcrDoubletDetect(object_after_ECLIPSE,
                                          singleChainLimit = 2,
                                          totalChainLimit = 4)
@@ -335,7 +335,7 @@ on CDR3 amino acid sequences, we must always use the argument
 Shown below are a couple potential types of downstream analysis made possible
 with `r Biocpkg("scRepertoire")`. For example, we can look at clonal sharing 
 across samples:
-```{r runCompareClonotypes}
+```{r runCompareClonotypes, fig.alt = "Plot showing clone sharing"}
 clonalCompare(object_after_ECLIPSE,
               top.clones = 10,
               graph = "alluvial",
@@ -347,14 +347,14 @@ clonalCompare(object_after_ECLIPSE,
 
 We can also visualize which samples have a larger fraction of expanded 
 clonotypes:
-```{r runClonalHomeostasis}
+```{r runClonalHomeostasis, fig.alt = "Plot showing clone sizes"}
 clonalHomeostasis(object_after_ECLIPSE,
                   cloneCall = "aa",
                   group.by = "Sample")
 ```
 
 Or we can look at repertoire diversity across samples:
-```{r runClonalDiversity}
+```{r runClonalDiversity, fig.alt = "Plot showing TCR diversity"}
 clonalDiversity(object_after_ECLIPSE,
                 metric = "shannon",
                 cloneCall = "aa",
@@ -400,7 +400,6 @@ three_chain_clones <- findThreeChainClones(s15_contigs,
                                            chain = "a",
                                            mode = "show",
                                            printStats = TRUE)
-
 ```
 
 This provides a list containing:
