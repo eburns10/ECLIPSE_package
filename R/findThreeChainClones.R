@@ -1,5 +1,4 @@
-#' @title Finds clone with 3 total TCR chains and modifies contigs to address
-#' this
+#' @title Finds clones with 3 total TCR chains and modifies their contigs
 #'
 #' @description Analyzes chain pairings across a sample to find clones with
 #' 2 TCR alpha or 2 TCR beta chains. Then, the contigs are modified so that

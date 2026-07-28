@@ -2,8 +2,7 @@
 % Please edit documentation in R/tcrDoubletDetect.R
 \name{tcrDoubletDetect}
 \alias{tcrDoubletDetect}
-\title{Filters out cells with excessive numbers of TCR chains and
-helps set thresholds for RNA counts based on TCR chain count.}
+\title{Finds and removes doublets from Seurat objects}
 \usage{
 tcrDoubletDetect(
   object,

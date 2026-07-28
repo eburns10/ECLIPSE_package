@@ -2,8 +2,7 @@
 % Please edit documentation in R/findThreeChainClones.R
 \name{findThreeChainClones}
 \alias{findThreeChainClones}
-\title{Modifies and returns cellranger TCR contig files if clones
-contain two alpha or beta chains.}
+\title{Finds clones with 3 total TCR chains and modifies their contigs}
 \usage{
 findThreeChainClones(contigs, chain, mode = "standard", printStats = TRUE)
 }
@@ -29,8 +28,10 @@ a tibble of modified contigs,
 except if mode show is selected.
 }
 \description{
-Modifies and returns cellranger TCR contig files if clones
-contain two alpha or beta chains.
+Analyzes chain pairings across a sample to find clones with
+2 TCR alpha or 2 TCR beta chains. Then, the contigs are modified so that
+these cells only have 1 alpha and 1 beta contig, with ::: separating each
+CDR3 sequence. These contigs are then returned.
 }
 \examples{
 data(post_qc_contigs)

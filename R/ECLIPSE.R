@@ -1,4 +1,4 @@
-#' @title Analyzes scTCR-seq to predict the true clonotype of each T cell.
+#' @title Determines the true clonotype of each cell
 #'
 #' @description Analyzes scTCR-seq data and returns results in Seurat object.
 #' Specifically, chain pairings across the sample are analyzed to predict

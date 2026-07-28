@@ -2,10 +2,7 @@
 % Please edit documentation in R/ECLIPSE.R
 \name{ECLIPSE}
 \alias{ECLIPSE}
-\title{Analyzes scTCR-seq data and returns results in Seurat object. Specifically,
-chain pairings across the sample are analyzed to predict chains lost to
-sequencing dropout and to decipher whether cells with >2 total TCR chains
-are caused by technical artifacts or true biology.}
+\title{Determines the true clonotype of each cell}
 \usage{
 ECLIPSE(
   contig_type = "all",
@@ -87,10 +84,10 @@ TRUE.}
 A Seurat object with TCR data provided in meta.data.
 }
 \description{
-Analyzes scTCR-seq data and returns results in Seurat object. Specifically,
-chain pairings across the sample are analyzed to predict chains lost to
-sequencing dropout and to decipher whether cells with >2 total TCR chains
-are caused by technical artifacts or true biology.
+Analyzes scTCR-seq data and returns results in Seurat object.
+Specifically, chain pairings across the sample are analyzed to predict
+chains lost to sequencing dropout and to decipher whether cells with >2
+total TCR chains are caused by technical artifacts or true biology.
 }
 \examples{
 data(test_seurat)

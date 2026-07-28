@@ -1,4 +1,4 @@
-#' @title Uses TCR data to find and remove doublets from Seurat object.
+#' @title Finds and removes doublets from Seurat objects
 #'
 #' @description Filters out cells with excessive numbers of TCR chains and
 #' helps set thresholds for RNA counts based on TCR chain count.
