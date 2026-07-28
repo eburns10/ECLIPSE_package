@@ -6,7 +6,7 @@ Authors@R: c(
     person("Zhaochen", "Ye", comment = c(ORCID = "0009-0000-4422-3861"), email = "zhaochen.ye@yale.edu", role = "ctb"),
     person("Kelly", "Street", comment = c(ORCID = "0000-0001-6379-5013"), email = "kelly.street@gmail.com", role = "ctb"),
     person("David", "Braun", comment = c(ORCID = "0000-0003-4543-5553"), email = "david.braun@yale.edu", role = c("aut", "fnd")))
-Description: This package primary analyzes single-cell T cell receptor sequencing data (scTCR-seq) produced from the CellRanger V(D)J pipeline. Specifically, it handles ambiguous clonotypes from T cells that have <2 or >2 TCR chains. The implementation of the E-M algorithm from VDJdive is used and combined with the discrimination of clonotypes with extra TCR chains from biological expression vs. technical artifacts. The package uses and returns a Seurat object, which then is able to be filtered based on TCR chain count using a second function.
+Description: This package is used for the analysis of single-cell T cell receptor sequencing data (scTCR-seq). ECLIPSE maps chain pairings across a sample to predict the true clonotype of each cell, unlike other methods which only consider the chains that are sequenced in each cell. Seurat objects and Cell Ranger vdj/multi contig files are required as inputs.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

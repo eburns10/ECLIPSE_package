@@ -1,8 +1,9 @@
+#' @title Analyzes scTCR-seq to predict the true clonotype of each T cell.
 #'
-#' Analyzes scTCR-seq data and returns results in Seurat object. Specifically,
-#' chain pairings across the sample are analyzed to predict chains lost to
-#' sequencing dropout and to decipher whether cells with >2 total TCR chains
-#' are caused by technical artifacts or true biology.
+#' @description Analyzes scTCR-seq data and returns results in Seurat object.
+#' Specifically, chain pairings across the sample are analyzed to predict
+#' chains lost to sequencing dropout and to decipher whether cells with >2
+#' total TCR chains are caused by technical artifacts or true biology.
 #'
 #' @param contig_folder_paths vector of paths to directories that contain TCR
 #' files. If you use this argument, provide either "all" or "filtered" to
