@@ -535,12 +535,16 @@ ECLIPSE <- function(contig_type = "all",
 
     contigs <- readVDJcontigs(temp_dir)
 
-    vdj <- clonoStats(contigs,
+    ### Please note suppressMessages is used here because
+    ### there is a message stating internal coercion from
+    ### Tsparse* to CsparseMatrix
+    ### that I do not want to be printed.
+    vdj <- suppressMessages(clonoStats(contigs,
         method = "EM",
         type = "TCR",
         assignment = TRUE,
         group = donor
-    )
+    ))
 
     if (verbose == TRUE) message("Extracting results from VDJdive...")
     df <- vdj@assignment
