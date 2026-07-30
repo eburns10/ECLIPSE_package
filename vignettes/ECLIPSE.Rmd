@@ -58,20 +58,27 @@ Please refer to our
 for more details about this method.
 
 # Installation and loading
-```{r reqs, echo = FALSE, results = "hide", message = FALSE, warning = FALSE}
-require(stringr)
-require(dplyr)
-require(scRepertoire)
+
+We need to first load three packages to run the vignette:
+```{r loadLibraries, results = "hide", message = FALSE, warning = FALSE}
+library(remotes) # only needed to insall the package
+library(tidyverse) # needed for data wrangling (or use base R instead)
+library(scRepertoire) # needed for downstream analysis
 ```
 
 Please use the following code to download `ECLIPSE` from GitHub and load it:
 ```{r githubInstall, eval = FALSE}
-remotes::install_github("eburns10/ECLIPSE")
+install_github("eburns10/ECLIPSE")
 ```
 
 ```{r loadECLIPSE}
 library(ECLIPSE)
 ```
+
+```{r loadKnitr, echo = FALSE, message = FALSE}
+require(knitr)
+```
+
 
 # Test dataset
 ECLIPSE includes a small test dataset of 1,000 cells from 2 patients (S3 and
@@ -102,7 +109,7 @@ of clonal tracking by `ECLIPSE`.
 
 To feed the contig files into `ECLIPSE`, there are two options:
 
-### Option 1: Use folder paths
+### Option 1: use folder paths
 For this option, a vector of folder paths that contain contig files is needed. 
 `ECLIPSE` will find the contig files within the folders you 
 provide, however it requires that each folder only contains 1 set of contig
@@ -120,7 +127,7 @@ print(tcr_folder_paths)
 ```
 
 
-### Option 2: Use contig file paths
+### Option 2: use contig file paths
 The second option also requires a vector of paths, but instead you specify
 the full path to the contig file. This option would be better if you have many
 contig files from different samples in one folder. 
@@ -247,6 +254,9 @@ performed, and the final clonotype is instead determined by
 5. Formatting the object for downstream analysis with 
 `r Biocpkg("scRepertoire")`
 
+For a full list of columns added by ECLIPSE and their description, please 
+refer to the supplemental information section.
+
 ## Running `ECLIPSE`
 To run `ECLIPSE`, there are two options, depending on whether we generated a 
 vector of folders containing contigs or contig file paths. If we want to use
@@ -297,7 +307,7 @@ head(object_after_ECLIPSE$CTaa) %>% as.vector()
 ```
 
 We can also compare these final clonotypes to what traditional analysis 
-would have determined: 
+would have determined, now stored in the `scR_CTaa` column: 
 ```{r checkTraditionalClonotypes}
 # Clonotype from traditional analysis
 head(object_after_ECLIPSE$scR_CTaa) %>% as.vector()
@@ -448,7 +458,64 @@ contig files. Typically this is `""` so `"Blank"` should be specified,
 however older versions of Cell Ranger use `"None"` instead. If this is the 
 case, please provide `"None"` here.
 
-## Seurat object columns Description
+```{r makeArgsTable, echo = FALSE}
+args <- c("`verbose`",
+            "`returnFilteredContigs`",
+            "`allowDoubleChains`",
+            "`combineTcrArgs`",
+            "`detailedEclipseStats`",
+            "`format`")
+
+descriptions <- c(
+    paste(
+        "By default `TRUE`. Prints stats such as QC filtering efficacy,",
+        "how many clones were called with 3 chains, and final percentages",
+        "of cells with a TCR called"
+    ),
+    paste(
+        "By default `FALSE`. `TRUE` would return the contigs after",
+        "QC filtering"
+    ),
+    paste(
+        "By default `\"both\"`, whereby clones can have 2 TCR$\\alpha$ or",
+        "TCR$\\beta$ chains. If `\"alpha\"` or `\"beta\"` is provided, only",
+        "clones with 2 of that type will be permitted. If `\"neither\"` is", 
+        "provided, then only clones with 2 chains will be called"
+    ),
+    paste(
+        "A list that determines how `scRepertoire::combineTCR()` is called.",
+        "As `ECLIPSE` runs `combineTCR/combineExpression` to allow users to",
+        "combine the predicted `ECLIPSE` clonotype with a",
+        "traditionally-defined clonotype, this tells which arguments",
+        "`combineTCR` should be run with. Specifically, it tells the 4",
+        "arguments 1) `removeNA`, 2) `removeMulti`, 3) `filterMulti`, and 4)", 
+        "`filterNonproductive` in that order. If `ECLIPSE` cannot call a",
+        "clonotype with high accuracy, the clonal annotation from this will",
+        "be used as the final clonotype. By default, this is",
+        "`list(FALSE, FALSE, FALSE, TRUE)`, which calls `combineTCR` with its",
+        "default arguments (i.e. no non-productive contigs are retained but",
+        "clones with 1 TCR chain or >2 are allowed)"
+    ),
+    paste(
+        "By default `FALSE`. This adds information about the EM algorithm",
+        "assignment to the Seurat object (i.e. what proportion of the cell",
+        "was assigned to the clone listed, etc...)"
+    ),
+    paste(
+        "By default `\"Blank\"`. This tells how missing data is stored in", 
+        "contig files. Typically this is `\"\"` so `\"Blank\"` should be",
+        "specified, however older versions of Cell Ranger use `\"None\"`",
+        "instead. If this is the case, please provide `\"None\"` here"
+    )
+)
+
+argsTable <- data.frame("Argument" = args,
+                        "Description" = descriptions)
+kable(argsTable, caption = "Arguments for the ECLIPSE function")
+```
+
+
+## Seurat object columns description
 
 1. `highConfChains`: all TCR chains that were sequenced in the cell and passed
 QC filtering by ECLIPSE. Helpful to compare to final clone (`CTaa`) used for 
@@ -478,8 +545,62 @@ MAIT cells (must have TRAV1-2 + TRAJ12 or TRAV1-2 + TRAJ20). Please note that
 these are for human samples only, murine T cells use different gene segments 
 that are not searched for by ECLIPSE.
 
+```{r makeColsTable, echo = FALSE}
+cols <- c("`highConfChains`",
+            paste("`scR_CTgene`, `scR_CTnt`, `scR_CTaa`, `scR_CTstrict`,",
+                "`scR_conalProportion`, `scR_clonalFrequency`,",
+                "`scR_cloneSize`"),
+            "`cloneCallSource`",
+            "`CTaa`, `clonalProportion`, `clonalFrequency`, `cloneSize`",
+            "`cell_unconventional_subset`, `clone_unconventional_subset`",
+           "`EM_max_prop`, `EM_2ndmax_prop`, `EM_max_2ndmax_ratio`")
 
-# Session Info
+descriptions <- c(
+    paste("all TCR chains that were sequenced in the cell and passed QC",
+        "filtering by ECLIPSE. Helpful to compare to final clone (`CTaa`)",
+        "used for analysis"),
+    paste("columns added by `scRepertoire::combineExpression`, see",
+        BiocStyle::Biocpkg("scRepertoire"),
+        "documentation for details. These",
+        "provide information about the cell if it was called with",
+        BiocStyle::Biocpkg("scRepertoire"),
+        "and can be useful in comparing to the final clone",
+        "(`CTaa`) used for analysis. Please note the \"scR_ prefix\" is added",
+        "so ECLIPSE can add other columns with the same name that can",
+        "interact with scRepertoire"),
+    paste("whether the final clonotype list (in `CTaa`) is from",
+        "the prediction of ",
+        BiocStyle::Biocpkg("VDJdive"),
+        "or from traditional analysis from",
+        BiocStyle::Biocpkg("scRepertoire")),
+    paste("columns in the style of what would be added by",
+        "`scRepertoire:::combineExpression`. However, `CTaa` here stores",
+        "the final clonotype of the cell as predicted by `ECLIPSE`"),
+    paste("`cell_unconventional_subset` tells if the chains detected suggest",
+        "the cell is a iNKT or MAIT cell. `clone_unconventional_subset` gives",
+        "similar information, but uses the final clonotype of the cell",
+        "instead of what chains were detected in that particular cell (and",
+        "therefore will capture more cells as being a iNKT or MAIT cell). For",
+        "both of these columns, `ECLIPSE` searches for 3 subsets: 1) iNKT",
+        "cells (must have TRAV10 + TRAJ18 + TRBV25-1), 2) conventional MAIT",
+        "cells (must have TRAV1-2 + TRAJ33), and 3) unconventional MAIT cells",
+        "(must have TRAV1-2 + TRAJ12 or TRAV1-2 + TRAJ20. Please note that",
+        "these are for human samples only, murine T cells use different gene",
+        "segments that are not searched for by `ECLIPSE`"),
+    paste("the proportion of the cell assigned by the EM algorithm to the",
+          "most and 2nd most likely clone. The ratio of these two proportions",
+          "(biggest/2nd biggest) is also provided. These columns are only",
+          "included if `detailedEclipseStats == TRUE`")
+)
+
+colsTable <- data.frame("Column" = cols,
+                        "Description" = descriptions)
+kable(colsTable, 
+      caption = "Columns made by the ECLIPSE function", 
+      escape = FALSE)
+```
+
+# Session info
 ```{r checkSessionInfo}
 sessionInfo()
 ```
