@@ -32,6 +32,8 @@ Config/roxygen2/version: 8.0.0
 Suggests: 
     knitr,
     rmarkdown,
-    ragg
+    ragg,
+    tidyverse,
+    remotes
 VignetteBuilder: knitr
 RoxygenNote: 8.0.0
