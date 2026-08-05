@@ -12,9 +12,9 @@ package: ECLIPSE
 abstract: |
   This vignette displays how to use the `ECLIPSE` package for the analysis of 
   single-cell T cell receptor sequencing data (scTCR-seq). The package utilizes
-  Seurat objects and `cell ranger vdj/multi` output files as its main inputs. 
+  Seurat objects and `cellranger vdj/multi` output files as its main inputs. 
   Core functionalities include the annotation of T cell clones, the
-  modification of `cell Ranger vdj/multi` output files to reflect clones with 
+  modification of `cellranger vdj/multi` output files to reflect clones with 
   extra TCR chains, and the filtering of cells with excessive TCR chains from 
   Seurat objects. Please refer to our 
   [pre-print](https://www.biorxiv.org/content/10.64898/2026.02.18.706444v1)
@@ -37,7 +37,7 @@ knitr::opts_chunk$set(
 # Introduction
 Traditional analysis of single-cell TCR sequencing (scTCR-seq) data defines 
 T cell clones based on the paired CDR3 sequences of the 
-TCR$\alpha$ and TCR$\beta$ chains. However, as >50% of cells in some samples 
+TCRα and TCRβ chains. However, as >50% of cells in some samples 
 possess only 1 or >2 TCR chains, this approach is ill-suited to interpret the 
 clonotypes of a substantial proportion of cells.
 
@@ -93,7 +93,7 @@ data("vignette_object")
 
 # Preparing inputs for `ECLIPSE`
 2 main inputs are required for `ECLIPSE`: a Seurat object that contains 
-scRNA-seq data and contig files from `cell ranger vdj/multi` (preferably 
+scRNA-seq data and contig files from `cellranger vdj/multi` (preferably 
 `all_contig_annotations.csv` files). 
 
 ## Contig files
@@ -101,7 +101,7 @@ The first input is contig files from `cellranger multi` or `cellranger vdj`,
 specifically `all_contig_annotations.csv` or `filtered_contig_annotations.csv`
 files. **We strongly recommend using all_contig_annotations** files as the 
 filtered contig files remove some biologically true contigs (ex.
-TCR$\alpha$ chains that use the TRDV1 gene segment, [see here](
+TCRα chains that use the TRDV1 gene segment, [see here](
 https://doi.org/10.3389/fimmu.2023.1286688)) as well as non-productive 
 contigs. While these non-productive chains may not influence T cell antigen 
 specificity, their presence in the contig files allows for enhanced fidelity  
@@ -185,8 +185,9 @@ contig_paths
 ```
 
 For example, `contig_paths[1]` holds a path for the TCR contigs for a cells
-from the normal tissue of S15, so any cell from that sample must have 1 in 
-this new column. We can make this column, here called `index`, as such:
+from the tumor tissue of S15, so any cell from that sample must have 2 
+(integer) but not "2" (character) in this new column. We can make this column, 
+here called `index`, as such:
 ```{r makeBatchColumn}
 # Since normal tissue from sample 15 is first (S15N), it is 1.
 # Tumor tissue from 15 is next (S15T), so it is 2, etc...
@@ -238,7 +239,7 @@ Briefly, this function does the following:
 
 1. Reading in contig data
 2. Filtering contigs (i.e. must be in Seurat, high_confidence, not duplicated,
-TCR$\alpha$ or TCR$\beta$, have a valid CDR3, etc...)
+TCRα or TCRβ, have a valid CDR3, etc...)
 3. Calling `findThreeChainClones` to find clones with biological expression of 
 3 total TCR chains and modifying the contigs to address this
 4. Utilizing the implementation of the EM algorithm in 
@@ -316,14 +317,15 @@ head(object_after_ECLIPSE$scR_CTaa) %>% as.vector()
 ECLIPSE also provides clone sizes and clonal proportions in the 
 `clonalFrequency` and `clonalProportion columns,` respectively, with matched 
 columns having a scR_prefix to show what would happen with traditional 
-analysis.
+analysis. For a full list of columns added by `ECLIPSE`, please refer to the 
+supplemental information section.
 
 # Running `tcrDoubletDetect`
 Now that the `ECLIPSE` function has been ran, we should now run the 2nd core 
 ECLIPSE function, `tcrDoubletDetect`, to filter out cells with excessive TCR 
 chains (these cells are likely a mix of doublets and cells with TCR 
-contamination). Here we remove any cells with >2 TCR$\alpha$ chains, >2 
-TCR$\beta$ chains, or >4 total ($\alpha$ + $\beta$) chains:
+contamination). Here we remove any cells with >2 TCRα chains, >2 
+TCRβ chains, or >4 total (α + β) chains:
 ```{r runDoubletDetect, fig.alt = "Plots from tcrDoubletDetect"}
 object_after_ECLIPSE <- tcrDoubletDetect(object_after_ECLIPSE,
                                          singleChainLimit = 2,
@@ -402,7 +404,7 @@ postqc_contigs <- ECLIPSE(contig_type = "all",
 
 Next, we filter on a sample we are interested in, and pass the contigs onto
 `findThreeChainClones` using ` mode = "show"` and `chain = "a"`
-to show clones with 2 TCR$\alpha$ chains:
+to show clones with 2 TCRα chains:
 ```{r runFindThreeChainClones}
 s15_contigs <- postqc_contigs %>% filter(donor == "S15")
 
@@ -414,7 +416,7 @@ three_chain_clones <- findThreeChainClones(s15_contigs,
 
 This provides a list containing:
 
-1. A table of all clones with 2 TCR$\alpha$ chains after filtering
+1. A table of all clones with 2 TCRα chains after filtering
 ```{r getOutput1}
 three_chain_clones[[1]]
 ```
@@ -448,8 +450,8 @@ descriptions <- c(
         "QC filtering"
     ),
     paste(
-        "By default `\"both\"`, whereby clones can have 2 TCR$\\alpha$ or",
-        "TCR$\\beta$ chains. If `\"alpha\"` or `\"beta\"` is provided, only",
+        "By default `\"both\"`, whereby clones can have 2 TCRα or",
+        "TCRβ chains. If `\"alpha\"` or `\"beta\"` is provided, only",
         "clones with 2 of that type will be permitted. If `\"neither\"` is", 
         "provided, then only clones with 2 chains will be called"
     ),
