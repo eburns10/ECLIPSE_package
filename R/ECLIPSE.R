@@ -129,7 +129,7 @@ ECLIPSE <- function(contig_type = "all",
     }
 
     if (!is.null(contig_file_paths) & !is.null(contig_folder_paths)) {
-        stop("Please do not use contig_file_paths and contig_folder_paths ",
+        stop("Please do not use contig_file_paths and contig_folder_paths. ",
             "Please try again.")
     }
 
@@ -478,7 +478,7 @@ ECLIPSE <- function(contig_type = "all",
             verbose == TRUE) {
             message(
                 "Running donor ", i, "/",
-                length(donors), " (", donors[i], ")"
+                length(donors), " (", donors[i], "):"
             )
         }
 
@@ -687,12 +687,15 @@ ECLIPSE <- function(contig_type = "all",
         seurat_object,
         group.by = "tcrEclipseGroup"
     )
+
     no_vdjd <- combineTCR(contig_list)
+
     seurat_object <- combineExpression(no_vdjd,
         seurat_object,
         cloneCall = "aa",
         proportion = TRUE
     )
+
     seurat_object$highConfChains <- seurat_object$CTaa
     seurat_object@meta.data <- seurat_object@meta.data %>%
         select(-all_of(c(
@@ -717,6 +720,16 @@ ECLIPSE <- function(contig_type = "all",
         proportion = TRUE
     )
     rm(seurat_object)
+
+    columns_to_remove <- which(colnames(obj@meta.data) %in%
+        c("scR_CTgene", "scR_CTnt", "scR_CTaa", "scR_CTstrict",
+            "scR_clonalFrequency", "scR_clonalProportion", "scR_cloneSize"))
+
+    if (length(columns_to_remove) > 0) {
+
+        obj@meta.data <- obj@meta.data[, -columns_to_remove]
+
+    }
 
     obj@meta.data <- obj@meta.data %>%
         rename(
@@ -933,7 +946,6 @@ ECLIPSE <- function(contig_type = "all",
             ~ NA
         )))
 
-
     ### Making a column that notes whether the cells in the clone appear
     ### to be MAIT or iNKT based on TCR segment usage
     obj@meta.data <- obj@meta.data %>%
@@ -1014,6 +1026,12 @@ ECLIPSE <- function(contig_type = "all",
         df <- df %>%
             ungroup() %>%
             select(all_of(c("CTaa_group", "clone_unconventional_subset")))
+
+        if ("clone_unconventional_subset" %in% colnames(obj@meta.data)) {
+            obj@meta.data <- obj@meta.data %>%
+                select(-all_of("clone_unconventional_subset"))
+        }
+
         obj@meta.data <- obj@meta.data %>% left_join(df, by = "CTaa_group")
         obj@meta.data <- obj@meta.data %>%
             mutate(clone_unconventional_subset = case_when(
